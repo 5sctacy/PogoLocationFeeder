@@ -37,14 +37,10 @@ namespace PogoLocationFeeder.Helper
 
         public bool AddToRepository(SniperInfo sniperInfo)
         {
-            //Ignore this for clients because it could be causing some problems.
-            if (GlobalSettings.IsServer)
+            if (sniperInfo.ReceivedTimeStamp > DateTime.Now || sniperInfo.VerifiedOn > DateTime.Now
+                || sniperInfo.ExpirationTimestamp > DateTime.Now.AddMinutes(20))
             {
-                if (sniperInfo.ReceivedTimeStamp > DateTime.Now || sniperInfo.VerifiedOn > DateTime.Now
-                    || sniperInfo.ExpirationTimestamp > DateTime.Now.AddMinutes(20))
-                {
-                    return false;
-                }
+                return false;
             }
             var oldSniperInfo = _sniperInfoRepository.Find(sniperInfo);
             if (oldSniperInfo != null)
@@ -143,7 +139,7 @@ namespace PogoLocationFeeder.Helper
                 && sniperInfo.EncounterId != default(ulong)
                 && sniperInfo.Move1 != PokemonMove.MoveUnset
                 && sniperInfo.Move2 != PokemonMove.MoveUnset
-                && (sniperInfo.SpawnPointId != null && sniperInfo.SpawnPointId != "")
+                && sniperInfo.SpawnPointId != null
                 && sniperInfo.IV > 0;
         }
 
